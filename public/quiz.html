@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Software Engineering Quiz</title>
+  <style>
+    body { font-family: sans-serif; background: #f7f7f7; margin: 0; }
+    .container { max-width: 800px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 32px 24px 24px 24px; }
+    h1 { text-align: center; margin-bottom: 32px; }
+    .question-block { margin-bottom: 32px; padding: 16px; border: 1px solid #eee; border-radius: 8px; background: #fafbfc; }
+    .question { margin-bottom: 8px; font-weight: bold; }
+    .options { margin-bottom: 8px; }
+    label { display: block; margin-bottom: 6px; cursor: pointer; }
+    .btn { display: inline-block; padding: 10px 28px; font-size: 16px; border: none; border-radius: 6px; background: #1976d2; color: #fff; cursor: pointer; margin-top: 16px; transition: background 0.2s; }
+    .btn:hover { background: #1256a3; }
+    .score { text-align: center; font-size: 22px; margin: 24px 0 8px 0; color: #1976d2; }
+    .correct { color: #388e3c; font-weight: bold; }
+    .wrong { color: #d32f2f; font-weight: bold; }
+    .back-btn { background: #888; margin-left: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Software Engineering Quiz</h1>
+    <form id="quizForm"></form>
+    <div id="result"></div>
+    <div style="text-align:center">
+      <button id="submitBtn" class="btn">Submit</button>
+      <button class="btn back-btn" onclick="location.href='index.html';return false;">Back to Home</button>
+    </div>
+  </div>
+  <script>
+    // All MCQs from all chapters
+    const quizData = [
+      // Chapter 1: Introduction
+      { question: "What is software engineering?", options: ["A branch of civil engineering", "The process of designing and building software systems systematically", "A type of computer hardware", "A programming language"], answer: 1 },
+      { question: "Which of the following is an essential attribute of good software?", options: ["It is expensive", "It is delivered late", "It is maintainable", "It is only used by developers"], answer: 2 },
+      { question: "What is the main reason for the high cost of software?", options: ["Hardware is expensive", "Software is easy to automate", "Software is labor-intensive and complex", "Software is mass-produced"], answer: 2 },
+      { question: "Which of the following is NOT a type of software product?", options: ["Generic products", "Customized products", "Physical products", "Web-based products"], answer: 2 },
+      { question: "What does a product specification define?", options: ["How the product will be marketed", "The functions and features the product must have", "The price of the product", "The hardware requirements only"], answer: 1 },
+      // Chapter 2: Software Processes
+      { question: "Which of the following is a fundamental activity in the software process?", options: ["Software deployment", "Software maintenance", "Software specification", "Software marketing"], answer: 2 },
+      { question: "Which process model is characterized by sequential phases?", options: ["Agile", "Waterfall", "Spiral", "Incremental"], answer: 1 },
+      { question: "What is the main advantage of incremental development?", options: ["All requirements must be known upfront", "Early delivery of part of the system", "No customer feedback", "No need for testing"], answer: 1 },
+      { question: "Which process model emphasizes risk management?", options: ["Waterfall", "Spiral", "Agile", "V-Model"], answer: 1 },
+      { question: "In software processes, what is validation?", options: ["Checking if the product is built right", "Checking if the right product is built", "Writing code", "Deploying software"], answer: 1 },
+      // Chapter 3: Agile Software Development
+      { question: "Which of the following is a key principle of Agile development?", options: ["Comprehensive documentation", "Responding to change over following a plan", "Big upfront design", "Strict sequential phases"], answer: 1 },
+      { question: "What is a 'sprint' in Scrum?", options: ["A long-term project plan", "A short, time-boxed period for development", "A type of testing", "A deployment phase"], answer: 1 },
+      { question: "Who is responsible for maximizing the value of the product in Scrum?", options: ["Scrum Master", "Product Owner", "Development Team", "Stakeholders"], answer: 1 },
+      { question: "Which Agile practice involves regular meetings to reflect and improve?", options: ["Daily Standup", "Retrospective", "Sprint Planning", "Backlog Grooming"], answer: 1 },
+      { question: "What is the main benefit of pair programming?", options: ["Faster typing", "Improved code quality and knowledge sharing", "Less communication", "No need for testing"], answer: 1 },
+      // Chapter 4: Requirements Engineering
+      { question: "What is a functional requirement?", options: ["A requirement about system performance", "A requirement describing what the system should do", "A requirement about usability", "A requirement about security"], answer: 1 },
+      { question: "Which of the following is a non-functional requirement?", options: ["The system must allow users to log in", "The system must respond within 2 seconds", "The system must generate reports", "The system must allow data export"], answer: 1 },
+      { question: "What is requirements elicitation?", options: ["Writing code", "Gathering requirements from stakeholders", "Testing software", "Deploying software"], answer: 1 },
+      { question: "Which technique is commonly used for requirements validation?", options: ["Code review", "Requirements review", "Unit testing", "Integration testing"], answer: 1 },
+      { question: "What is the main purpose of a use case?", options: ["To describe how users interact with the system", "To test the system", "To design the database", "To deploy the software"], answer: 0 },
+      // Chapter 5: System Modeling
+      { question: "What is the purpose of system modeling?", options: ["To create physical prototypes", "To help understand and communicate system structure and behavior", "To write code", "To test software"], answer: 1 },
+      { question: "Which diagram shows the interactions between actors and the system?", options: ["Class diagram", "Use case diagram", "Sequence diagram", "State diagram"], answer: 1 },
+      { question: "What does a class diagram represent?", options: ["System states", "System activities", "System structure and relationships", "User interfaces"], answer: 2 },
+      { question: "Which diagram is best for modeling the flow of control?", options: ["Activity diagram", "Class diagram", "Component diagram", "Deployment diagram"], answer: 0 },
+      { question: "What is an actor in a use case diagram?", options: ["A database table", "A user or external system interacting with the system", "A software module", "A test case"], answer: 1 },
+      // Chapter 8: Software Testing
+      { question: "What is the main goal of software testing?", options: ["To find and fix defects", "To write code", "To deploy software", "To design user interfaces"], answer: 0 },
+      { question: "Which type of testing focuses on individual components?", options: ["System testing", "Integration testing", "Unit testing", "Acceptance testing"], answer: 2 },
+      { question: "What is black-box testing?", options: ["Testing based on internal code structure", "Testing based on requirements and functionality", "Testing by developers only", "Testing only user interfaces"], answer: 1 },
+      { question: "Which of the following is a dynamic testing technique?", options: ["Code inspection", "Walkthrough", "Unit testing", "Requirements review"], answer: 2 },
+      { question: "What is regression testing?", options: ["Testing new features only", "Testing to ensure changes haven't broken existing functionality", "Testing performance", "Testing security"], answer: 1 },
+      // Chapter 9: Software Evaluation
+      { question: "What is software evaluation?", options: ["Measuring software against requirements and quality standards", "Writing code", "Testing only", "Deploying software"], answer: 0 },
+      { question: "Which of the following is a type of software evaluation?", options: ["Usability evaluation", "Code review", "Unit testing", "Integration testing"], answer: 0 },
+      { question: "What is the main purpose of usability evaluation?", options: ["To test system performance", "To assess how easy the system is to use", "To check code quality", "To deploy software"], answer: 1 },
+      { question: "Which evaluation method involves users performing tasks?", options: ["Heuristic evaluation", "User testing", "Code inspection", "Static analysis"], answer: 1 },
+      { question: "What is a heuristic evaluation?", options: ["An expert review based on usability principles", "Testing by end users", "Performance testing", "Security testing"], answer: 0 }
+    ];
+
+    // Pick 10 random questions from quizData
+    function getRandomQuestions(data, num) {
+      const shuffled = [...data].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, num);
+    }
+
+    let currentQuestions = getRandomQuestions(quizData, 10);
+
+    function renderQuiz() {
+      const form = document.getElementById('quizForm');
+      form.innerHTML = '';
+      currentQuestions.forEach((q, idx) => {
+        const block = document.createElement('div');
+        block.className = 'question-block';
+        const qDiv = document.createElement('div');
+        qDiv.className = 'question';
+        qDiv.textContent = `${idx + 1}. ${q.question}`;
+        block.appendChild(qDiv);
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'options';
+        q.options.forEach((opt, oidx) => {
+          const label = document.createElement('label');
+          const radio = document.createElement('input');
+          radio.type = 'radio';
+          radio.name = `q${idx}`;
+          radio.value = oidx;
+          label.appendChild(radio);
+          label.appendChild(document.createTextNode(' ' + opt));
+          optionsDiv.appendChild(label);
+        });
+        block.appendChild(optionsDiv);
+        form.appendChild(block);
+      });
+    }
+
+    document.getElementById('submitBtn').onclick = function(e) {
+      e.preventDefault();
+      const form = document.getElementById('quizForm');
+      const resultDiv = document.getElementById('result');
+      let score = 0;
+      let html = '';
+      currentQuestions.forEach((q, idx) => {
+        const selected = form.elements[`q${idx}`].value;
+        const isCorrect = String(selected) === String(q.answer);
+        if (isCorrect) score++;
+        html += `<div class='question-block'><div class='question'>${idx + 1}. ${q.question}</div>`;
+        q.options.forEach((opt, oidx) => {
+          let style = '';
+          if (oidx === q.answer) style = 'correct';
+          if (String(selected) === String(oidx) && !isCorrect) style = 'wrong';
+          html += `<div class='${style}'>${String.fromCharCode(65 + oidx)}. ${opt}</div>`;
+        });
+        html += `<div><b>Your Answer:</b> ${selected !== undefined ? String.fromCharCode(65 + Number(selected)) : '<i>No answer</i>'}</div>`;
+        html += `<div><b>Correct Answer:</b> ${String.fromCharCode(65 + q.answer)}</div>`;
+        html += '</div>';
+      });
+      html = `<div class='score'>Your Score: ${score} / ${currentQuestions.length}</div>` + html;
+      resultDiv.innerHTML = html;
+      window.scrollTo({top:0,behavior:'smooth'});
+    };
+
+    renderQuiz();
+  </script>
+</body>
+</html> 

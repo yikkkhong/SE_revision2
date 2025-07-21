@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Software Engineering Final Exam</title>
+  <style>
+    body { font-family: sans-serif; background: #f7f7f7; margin: 0; }
+    .container { max-width: 700px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 32px 24px 24px 24px; }
+    h1 { text-align: center; margin-bottom: 32px; }
+    .question-block { margin-bottom: 32px; padding: 16px; border: 1px solid #eee; border-radius: 8px; background: #fafbfc; }
+    .question { margin-bottom: 8px; font-weight: bold; }
+    textarea { width: 100%; min-height: 80px; font-size: 16px; border-radius: 6px; border: 1px solid #ccc; padding: 8px; margin-bottom: 8px; }
+    .btn { display: inline-block; padding: 10px 28px; font-size: 16px; border: none; border-radius: 6px; background: #1976d2; color: #fff; cursor: pointer; margin-top: 16px; transition: background 0.2s; }
+    .btn:hover { background: #1256a3; }
+    .score { text-align: center; font-size: 22px; margin: 24px 0 8px 0; color: #1976d2; }
+    .ref-answer { background: #f3f3f3; border-left: 4px solid #1976d2; padding: 8px 12px; margin-top: 6px; font-size: 15px; }
+    .back-btn { background: #888; margin-left: 16px; }
+    .mark { font-weight: bold; color: #1976d2; margin-left: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Software Engineering Final Exam</h1>
+    <form id="finalForm"></form>
+    <div id="result"></div>
+    <div style="text-align:center">
+      <button id="submitBtn" class="btn">Submit</button>
+      <button class="btn back-btn" onclick="location.href='index.html';return false;">Back to Home</button>
+    </div>
+  </div>
+  <script>
+    // Subjective questions from all chapters
+    const finalQuestions = [
+      // Ch1 Introduction
+      {
+        question: "What are the essential attributes of good software? Explain each briefly.",
+        keywords: [
+          ["maintainability"],
+          ["dependability", "reliability", "security", "safety"],
+          ["efficiency", "performance"],
+          ["acceptability", "usability", "user-friendly"]
+        ],
+        ref: "Good software should be maintainable (easy to change), dependable and secure (reliable, safe, secure), efficient (performance and resource use), and acceptable (usable, meets user needs)."
+      },
+      // Ch2 Software Processes
+      {
+        question: "Compare the Waterfall and Incremental software process models. Give one advantage and one disadvantage of each.",
+        keywords: [
+          ["waterfall", "sequential", "phases"],
+          ["incremental", "deliver", "part", "early", "iteration"],
+          ["advantage", "easy to manage", "clear phases", "early delivery", "customer feedback"],
+          ["disadvantage", "inflexible", "late delivery", "requirements change", "integration issues"]
+        ],
+        ref: "Waterfall is a sequential process with clear phases, easy to manage but inflexible to changes. Incremental delivers parts of the system early, allows feedback, but may have integration issues."
+      },
+      // Ch3 Agile Software Development
+      {
+        question: "Describe two key principles of Agile development and explain why they are important.",
+        keywords: [
+          ["responding to change", "adapt", "flexible"],
+          ["customer collaboration", "stakeholder", "feedback"],
+          ["working software", "deliver frequently"],
+          ["individuals and interactions", "teamwork"]
+        ],
+        ref: "Agile values responding to change (adapting to new requirements) and customer collaboration (frequent feedback). It also values working software delivered frequently and strong teamwork. These principles help deliver better software that meets user needs."
+      },
+      // Ch4 Requirements Engineering
+      {
+        question: "Explain the difference between functional and non-functional requirements. Provide two examples for each.",
+        keywords: [
+          ["functional requirement", "system should do", "feature", "behavior"],
+          ["non-functional requirement", "quality", "how well", "performance", "security", "usability"]
+        ],
+        ref: "Functional requirements specify what the system should do, such as features and behaviors. Examples: 'The system must allow users to log in', 'The system must generate monthly reports.' Non-functional requirements specify how the system performs its functions, such as quality attributes. Examples: 'The system must respond within 2 seconds', 'The system must be secure.'"
+      },
+      // Ch5 System Modeling
+      {
+        question: "What is the purpose of use case diagrams and class diagrams in system modeling?",
+        keywords: [
+          ["use case diagram", "actor", "interaction", "functionality"],
+          ["class diagram", "structure", "relationship", "class", "object"]
+        ],
+        ref: "Use case diagrams show the interactions between actors and the system, representing system functionality. Class diagrams show the structure of the system, including classes and relationships."
+      },
+      // Ch8 Software Testing
+      {
+        question: "What is black-box testing? How does it differ from white-box testing? Give one example of each.",
+        keywords: [
+          ["black-box", "functionality", "requirements", "no knowledge of code"],
+          ["white-box", "internal structure", "code", "logic", "path"]
+        ],
+        ref: "Black-box testing tests functionality and requirements without knowledge of internal code (e.g., system testing). White-box testing examines internal code and logic (e.g., unit testing by developers)."
+      },
+      // Ch9 Software Evaluation
+      {
+        question: "What is usability evaluation? Describe one method for evaluating usability and its importance.",
+        keywords: [
+          ["usability evaluation", "ease of use", "user-friendly"],
+          ["user testing", "heuristic evaluation", "expert review", "task"],
+          ["importance", "improve", "user experience", "identify problems"]
+        ],
+        ref: "Usability evaluation assesses how easy a system is to use. Methods include user testing (users perform tasks) and heuristic evaluation (experts review usability). It is important to improve user experience and identify usability problems."
+      },
+      // More questions for better randomization:
+      // Ch1
+      {
+        question: "Explain why software engineering is important in modern society.",
+        keywords: [
+          ["critical systems", "everyday life", "business", "infrastructure"],
+          ["quality", "reliability", "safety"],
+          ["cost", "complexity", "maintenance"]
+        ],
+        ref: "Software engineering is important because software is used in critical systems, business, and daily life. It ensures quality, reliability, and safety, and helps manage cost and complexity."
+      },
+      // Ch2
+      {
+        question: "List and briefly describe the four fundamental activities in all software processes.",
+        keywords: [
+          ["specification"],
+          ["development", "design", "implementation"],
+          ["validation", "testing"],
+          ["evolution", "maintenance"]
+        ],
+        ref: "The four fundamental activities are: specification (defining requirements), development (design and implementation), validation (testing), and evolution (maintenance and updating)."
+      },
+      // Ch3
+      {
+        question: "What is a sprint in Scrum? Describe its purpose and typical duration.",
+        keywords: [
+          ["sprint", "scrum"],
+          ["iteration", "time-boxed", "short period"],
+          ["goal", "deliverable", "increment"],
+          ["1-4 weeks", "duration"]
+        ],
+        ref: "A sprint in Scrum is a short, time-boxed iteration (usually 1-4 weeks) with a specific goal to deliver a usable increment of the product."
+      },
+      // Ch4
+      {
+        question: "Describe two techniques used for requirements elicitation.",
+        keywords: [
+          ["interview", "questionnaire", "survey"],
+          ["workshop", "focus group"],
+          ["observation", "shadowing"],
+          ["prototyping"]
+        ],
+        ref: "Techniques for requirements elicitation include interviews, questionnaires, workshops, observation, and prototyping."
+      },
+      // Ch5
+      {
+        question: "What is the difference between a sequence diagram and a state diagram?",
+        keywords: [
+          ["sequence diagram", "interaction", "message", "order"],
+          ["state diagram", "state", "transition", "event"]
+        ],
+        ref: "A sequence diagram shows the order of interactions/messages between objects. A state diagram shows the states of a system and transitions between them based on events."
+      },
+      // Ch8
+      {
+        question: "Explain the purpose of regression testing in software development.",
+        keywords: [
+          ["regression testing", "unchanged functionality", "existing features"],
+          ["after changes", "modification", "bug fix", "update"]
+        ],
+        ref: "Regression testing ensures that changes or bug fixes do not break existing functionality. It is performed after modifications to the code."
+      },
+      // Ch9
+      {
+        question: "Why is user testing important in software evaluation? Give one example of a user testing method.",
+        keywords: [
+          ["user testing", "real users", "feedback"],
+          ["usability", "ease of use"],
+          ["think-aloud", "task completion", "scenario"]
+        ],
+        ref: "User testing is important to get feedback from real users and assess usability. Methods include think-aloud protocols and task completion scenarios."
+      }
+    ];
+
+    // Pick 4 random questions from finalQuestions
+    function getRandomQuestions(data, num) {
+      const shuffled = [...data].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, num);
+    }
+
+    let currentQuestions = getRandomQuestions(finalQuestions, 4);
+
+    function renderFinalExam() {
+      const form = document.getElementById('finalForm');
+      form.innerHTML = '';
+      currentQuestions.forEach((q, idx) => {
+        const block = document.createElement('div');
+        block.className = 'question-block';
+        const qDiv = document.createElement('div');
+        qDiv.className = 'question';
+        qDiv.textContent = `${idx + 1}. ${q.question}`;
+        block.appendChild(qDiv);
+        const textarea = document.createElement('textarea');
+        textarea.name = `q${idx}`;
+        textarea.placeholder = 'Write your answer here...';
+        block.appendChild(textarea);
+        form.appendChild(block);
+      });
+    }
+
+    function markAnswer(ans, keywords) {
+      let mark = 0;
+      let total = keywords.length;
+      let ansLower = ans.toLowerCase();
+      keywords.forEach(group => {
+        if (group.some(kw => ansLower.includes(kw))) mark++;
+      });
+      return Math.round((mark / total) * 100 / currentQuestions.length);
+    }
+
+    document.getElementById('submitBtn').onclick = function(e) {
+      e.preventDefault();
+      const form = document.getElementById('finalForm');
+      const resultDiv = document.getElementById('result');
+      let totalScore = 0;
+      let html = '';
+      currentQuestions.forEach((q, idx) => {
+        const ans = form.elements[`q${idx}`].value || '';
+        const score = markAnswer(ans, q.keywords);
+        totalScore += score;
+        html += `<div class='question-block'><div class='question'>${q.question}</div>`;
+        html += `<div><b>Your Answer:</b><br>${ans ? ans.replace(/\n/g, '<br>') : '<i>No answer</i>'}</div>`;
+        html += `<div class='mark'>Score: ${score} / ${100 / currentQuestions.length}</div>`;
+        html += `<div class='ref-answer'><b>Reference Answer:</b> ${q.ref}</div></div>`;
+      });
+      html = `<div class='score'>Total Score: ${totalScore} / 100</div>` + html;
+      resultDiv.innerHTML = html;
+      window.scrollTo({top:0,behavior:'smooth'});
+    };
+
+    renderFinalExam();
+  </script>
+</body>
+</html> 
